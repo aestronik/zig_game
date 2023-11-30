@@ -1,0 +1,15 @@
+.{
+    .name = "name",
+    .version = "0.0.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src/",
+    },
+    .dependencies = .{
+        .raylib = .{
+            .url = "https://github.com/raysan5/raylib/archive/7e60227720515143712e1df9e78e7a6ecfc46169.tar.gz",
+            .hash = "1220cd36fc3f8fc44a42e288ea1d9780d652359b69bd94b7f9bb9cce2a87e048f25c",
+        },
+    },
+}
