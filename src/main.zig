@@ -1,4 +1,5 @@
 const std = @import("std");
+const print = std.debug.print;
 const raylib = @cImport({
     @cInclude("raylib.h");
 });
@@ -34,41 +35,58 @@ const Palette = struct {
     };
 };
 
-fn Component_Entity(comptime Generic_Entity: type) type {
-    return struct {
-        in_use: bool,
-        data: Generic_Entity,
-    };
-}
 
-fn Component_List(comptime Generic_Type: type) type {
-    return struct {
-        List: []Generic_Type,
-        length: usize,
-        final_index: usize,
+const List = struct {
+    /// Error handling
+    const Error = error { Full };
+    /// Enums
+    const Size  = enum(usize) {
+        Small  = 0x0100,
+        Medium = 0x1000,
+        Large  = 0x4000,
     };
-}
-
-fn add (comptime T: type, container: Component_List(Component_Entity(T)), entity: T) void {
-    container.List[20] = Component_Entity(T) {
-        .in_use = true,
-        .data = entity
-    };
-}
+    /// Types
+    fn Entity    (comptime Generic_Entity: type) type {
+        return struct {
+            in_use: bool,
+            data: Generic_Entity,
+        };
+    }
+    fn Container (comptime Generic_Type:   type) type {
+        return struct {
+            Data: []List.Entity(Generic_Type),
+            // Meta Data
+            current_size: usize, // 0
+            capacity:     usize, // N
+            final_index:  usize, // 0
+        };
+    }
+    /// Actions to be performed on Lists
+    fn reset (container: anytype) void {
+        var index: usize = 0;
+        while (index < container.Data.len) {
+            container.Data[index].in_use = false;
+            container.Data[index].data.x = 25;
+            index += 1;
+        }
+        container.current_size = 0;
+        container.capacity     = container.Data.len;
+        container.final_index  = 0;
+    }
+};
 
 pub fn main() !void {
-    const screen_width = 800;
-    const screen_height = 450;
-
-    var test_array: [0x100]Component_Entity(i32) = undefined;
-
-    var test_container = Component_List(Component_Entity(i32)) {
-        .List = &test_array,
-        .length = 0x100,
-        .final_index = 0
+    var test_data: [0x100]List.Entity(raylib.Vector2) = undefined;
+    var test_list = List.Container(raylib.Vector2) {
+        .Data = &test_data,
+        .current_size = 0,
+        .capacity     = 100,
+        .final_index  = 0,
     };
+    List.reset(&test_list);
 
-    add(i32, test_container, 400);
+    const screen_width  = 800;
+    const screen_height = 600;
 
     raylib.InitWindow(screen_width, screen_height, "zig_game");
     while (!raylib.WindowShouldClose()) {
@@ -80,7 +98,7 @@ pub fn main() !void {
         const y = raylib.GetMouseY();
         // const color = if (raylib.IsMouseButtonDown(0)) Palette.red else Palette.blue;
         const color = if (raylib.IsKeyDown(raylib.KEY_A)) Palette.red else Palette.blue;
-        raylib.DrawLine(test_container.List[20].data, 0, x, y, color);
+        raylib.DrawLine(@intFromFloat(test_data[20].data.x), 0, x, y, color);
         raylib.EndDrawing();
     }
     raylib.CloseWindow();
