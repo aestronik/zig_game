@@ -93,8 +93,6 @@ const List = struct {
     }
 };
 
-
-
 pub fn main() !void {
 
     var new_state = State {
