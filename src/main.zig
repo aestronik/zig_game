@@ -35,16 +35,27 @@ const Palette = struct {
     };
 };
 
+const State = struct {
+    Physics_Container: List.Container([Physics.size]List.Entity(Physics.Entity))
+};
 
+const Physics = struct {
+    /// Array size
+    const size   = 0x4000;
+    /// Associated type
+    const Entity = struct {
+        Position: raylib.Vector2,
+        Velocity: raylib.Vector2,
+        size:     f64
+    };
+    /// Setting up the state properly
+    fn initialize (state: *State) void {
+        List.reset(&state.Physics_Container);
+    }
+};
 const List = struct {
     /// Error handling
     const Error = error { Full };
-    /// Enums
-    const Size  = enum(usize) {
-        Small  = 0x0100,
-        Medium = 0x1000,
-        Large  = 0x4000,
-    };
     /// Types
     fn Entity    (comptime Generic_Entity: type) type {
         return struct {
@@ -52,9 +63,9 @@ const List = struct {
             data: Generic_Entity,
         };
     }
-    fn Container (comptime Generic_Type:   type) type {
+    fn Container (comptime Generic_Array:  type) type {
         return struct {
-            Data: []List.Entity(Generic_Type),
+            Data:         Generic_Array,
             // Meta Data
             current_size: usize, // 0
             capacity:     usize, // N
@@ -62,11 +73,18 @@ const List = struct {
         };
     }
     /// Actions to be performed on Lists
+    fn initialize (comptime Generic_Array: type) List.Container(Generic_Array) {
+        return List.Container(Generic_Array) {
+            .Data         = undefined,
+            .current_size = 0,
+            .capacity     = 0,
+            .final_index  = 0,
+        };
+    }
     fn reset (container: anytype) void {
         var index: usize = 0;
         while (index < container.Data.len) {
             container.Data[index].in_use = false;
-            container.Data[index].data.x = 25;
             index += 1;
         }
         container.current_size = 0;
@@ -75,21 +93,23 @@ const List = struct {
     }
 };
 
+
+
 pub fn main() !void {
-    var test_data: [0x100]List.Entity(raylib.Vector2) = undefined;
-    var test_list = List.Container(raylib.Vector2) {
-        .Data = &test_data,
-        .current_size = 0,
-        .capacity     = 100,
-        .final_index  = 0,
+
+    var new_state = State {
+        .Physics_Container = List.initialize([Physics.size]List.Entity(Physics.Entity))
     };
-    List.reset(&test_list);
+
+    Physics.initialize(&new_state);
+
 
     const screen_width  = 800;
     const screen_height = 600;
 
     raylib.InitWindow(screen_width, screen_height, "zig_game");
     while (!raylib.WindowShouldClose()) {
+        // print("test_list.Data.len = {} \n", .{test_list.Data.len});
         std.time.sleep(1000 / CONFIG.FPS * 1_000_000);
         raylib.BeginDrawing();
         raylib.ClearBackground(Palette.white);
@@ -98,7 +118,7 @@ pub fn main() !void {
         const y = raylib.GetMouseY();
         // const color = if (raylib.IsMouseButtonDown(0)) Palette.red else Palette.blue;
         const color = if (raylib.IsKeyDown(raylib.KEY_A)) Palette.red else Palette.blue;
-        raylib.DrawLine(@intFromFloat(test_data[20].data.x), 0, x, y, color);
+        raylib.DrawLine(@intFromFloat(new_state.Physics_Container.Data[12].data.Position.x), 0, x, y, color);
         raylib.EndDrawing();
     }
     raylib.CloseWindow();
