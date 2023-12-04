@@ -1,8 +1,9 @@
-const std = @import("std");
-const print = std.debug.print;
-const raylib = @cImport({
-    @cInclude("raylib.h");
-});
+const std     = @import("std");
+const print   = std.debug.print;
+const raylib  = @cImport({@cInclude("raylib.h");});
+const List    = @import("lib/list.zig");
+const Physics = @import("lib/physics.zig");
+const State   = @import("lib/state.zig");
 
 const CONFIG = struct {
     const FPS: u64 = 60;
@@ -35,72 +36,12 @@ const Palette = struct {
     };
 };
 
-const State = struct {
-    Physics_Container: List.Container([Physics.size]List.Entity(Physics.Entity))
-};
-
-const Physics = struct {
-    /// Array size
-    const size   = 0x4000;
-    /// Associated type
-    const Entity = struct {
-        Position: raylib.Vector2,
-        Velocity: raylib.Vector2,
-        size:     f64
-    };
-    /// Setting up the state properly
-    fn initialize (state: *State) void {
-        List.reset(&state.Physics_Container);
-    }
-};
-const List = struct {
-    /// Error handling
-    const Error = error { Full };
-    /// Types
-    fn Entity    (comptime Generic_Entity: type) type {
-        return struct {
-            in_use: bool,
-            data: Generic_Entity,
-        };
-    }
-    fn Container (comptime Generic_Array:  type) type {
-        return struct {
-            Data:         Generic_Array,
-            // Meta Data
-            current_size: usize, // 0
-            capacity:     usize, // N
-            final_index:  usize, // 0
-        };
-    }
-    /// Actions to be performed on Lists
-    fn initialize (comptime Generic_Array: type) List.Container(Generic_Array) {
-        return List.Container(Generic_Array) {
-            .Data         = undefined,
-            .current_size = 0,
-            .capacity     = 0,
-            .final_index  = 0,
-        };
-    }
-    fn reset (container: anytype) void {
-        var index: usize = 0;
-        while (index < container.Data.len) {
-            container.Data[index].in_use = false;
-            index += 1;
-        }
-        container.current_size = 0;
-        container.capacity     = container.Data.len;
-        container.final_index  = 0;
-    }
-};
-
 pub fn main() !void {
 
-    var new_state = State {
+    var state = State.Entity {
         .Physics_Container = List.initialize([Physics.size]List.Entity(Physics.Entity))
     };
-
-    Physics.initialize(&new_state);
-
+    Physics.initialize(&state);
 
     const screen_width  = 800;
     const screen_height = 600;
@@ -116,7 +57,7 @@ pub fn main() !void {
         const y = raylib.GetMouseY();
         // const color = if (raylib.IsMouseButtonDown(0)) Palette.red else Palette.blue;
         const color = if (raylib.IsKeyDown(raylib.KEY_A)) Palette.red else Palette.blue;
-        raylib.DrawLine(@intFromFloat(new_state.Physics_Container.Data[12].data.Position.x), 0, x, y, color);
+        raylib.DrawLine(@intFromFloat(state.Physics_Container.Data[12].data.Position.x), 0, x, y, color);
         raylib.EndDrawing();
     }
     raylib.CloseWindow();
