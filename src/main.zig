@@ -62,3 +62,8 @@ pub fn main() !void {
     }
     raylib.CloseWindow();
 }
+
+
+test {
+    _ = @import("lib/list.zig");
+}
