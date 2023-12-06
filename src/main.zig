@@ -36,29 +36,51 @@ const Palette = struct {
     };
 };
 
-pub fn main() !void {
 
+
+pub fn main() !void {
     var state = State.Entity {
         .Physics_Container = List.initialize([Physics.size]List.Entity(Physics.Entity))
     };
     Physics.initialize(&state);
-
     const screen_width  = 800;
     const screen_height = 600;
-
+    var rand_impl = std.rand.DefaultPrng.init(42);
     raylib.InitWindow(screen_width, screen_height, "zig_game");
-    while (!raylib.WindowShouldClose()) {
-        // print("test_list.Data.len = {} \n", .{test_list.Data.len});
-        std.time.sleep(1000 / CONFIG.FPS * 1_000_000);
-        raylib.BeginDrawing();
-        raylib.ClearBackground(Palette.white);
-        raylib.DrawFPS(100, 100);
-        const x = raylib.GetMouseX();
-        const y = raylib.GetMouseY();
-        // const color = if (raylib.IsMouseButtonDown(0)) Palette.red else Palette.blue;
-        const color = if (raylib.IsKeyDown(raylib.KEY_A)) Palette.red else Palette.blue;
-        raylib.DrawLine(@intFromFloat(state.Physics_Container.Data[12].data.Position.x), 0, x, y, color);
-        raylib.EndDrawing();
+    {
+        // var texture   = raylib.LoadTexture("assets/visual/missing_texture_32_hollow.png");
+        defer {raylib.UnloadTexture(texture);}
+        while (!raylib.WindowShouldClose()) {
+            // print("test_list.Data.len = {} \n", .{test_list.Data.len});
+            // std.time.sleep(1000 / CONFIG.FPS * 1_000_000);
+            raylib.BeginDrawing();
+            raylib.ClearBackground(Palette.white);
+            //  1k Circles
+            //  5k Rectangle Lines
+            // 10k Rectanagles
+            // 15k Textures
+            const limit = 15_000;
+            var   index:usize = 0;
+            if (raylib.IsTextureReady(texture)) {
+                while ( index < limit ) {
+                    raylib.DrawTexture( 
+                        texture,
+                        @mod(rand_impl.random().int(i32), 800),
+                        @mod(rand_impl.random().int(i32), 600),
+                        Palette.white
+                    );
+                    index += 1;
+                }
+            }
+            raylib.DrawFPS(100, 100); // Empty scenes get about 2k fps
+
+            const x = raylib.GetMouseX();
+            const y = raylib.GetMouseY();
+            // const color = if (raylib.IsMouseButtonDown(0)) Palette.red else Palette.blue;
+            const color = if (raylib.IsKeyDown(raylib.KEY_A)) Palette.red else Palette.blue;
+            raylib.DrawLine(@intFromFloat(state.Physics_Container.Data[12].data.Position.x), 0, x, y, color);
+            raylib.EndDrawing();
+        }
     }
     raylib.CloseWindow();
 }
