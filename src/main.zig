@@ -4,11 +4,8 @@ const raylib  = @cImport({@cInclude("raylib.h");});
 const List    = @import("lib/list.zig");
 const Physics = @import("lib/physics.zig");
 const State   = @import("lib/state.zig");
-
-const CONFIG = struct {
-    const FPS: u64 = 60;
-};
-
+const CONFIG  = @import("config.zig");
+const Scene   = @import("lib/scene/main.zig");
 const Palette = struct {
     const red = raylib.Color {
         .r = 255,
@@ -36,19 +33,19 @@ const Palette = struct {
     };
 };
 
-
-
 pub fn main() !void {
     var state = State.Entity {
         .Physics_Container = List.initialize([Physics.size]List.Entity(Physics.Entity))
     };
     Physics.initialize(&state);
+
+    try Scene.enter(Scene.Name.Default, 42);
     const screen_width  = 800;
     const screen_height = 600;
     var rand_impl = std.rand.DefaultPrng.init(42);
     raylib.InitWindow(screen_width, screen_height, "zig_game");
     {
-        // var texture   = raylib.LoadTexture("assets/visual/missing_texture_32_hollow.png");
+        var texture   = raylib.LoadTexture("assets/visual/missing_texture_32_hollow.png");
         defer {raylib.UnloadTexture(texture);}
         while (!raylib.WindowShouldClose()) {
             // print("test_list.Data.len = {} \n", .{test_list.Data.len});
