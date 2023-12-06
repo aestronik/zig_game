@@ -1,5 +1,15 @@
 const List    = @import("list.zig");
 const Physics = @import("physics.zig");
+const Scene   = @import("scene/main.zig");
+const CONFIG  = @import("../config.zig");
+
+const std     = @import("std");
+
+
+const raylib  = @cImport({@cInclude("raylib.h");});
 pub const Entity = struct {
-    Physics_Container: List.Container([Physics.size]List.Entity(Physics.Entity))
+    Physics_Container: List.Container([CONFIG.PHYSICS_MAX]List.Entity(Physics.Entity)),
+    Scene_Container:   List.Container([CONFIG.SCENES_MAX]List.Entity(Scene.Name)),
+    RNG:               std.rand.Xoshiro256,
+    texture:           raylib.Texture
 };

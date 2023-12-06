@@ -1,13 +1,36 @@
+const std        = @import("std");
+
 const     CONFIG = @import("../../config.zig");
-pub const Name   = CONFIG.Scenes.Name;
-pub const List   = CONFIG.Scenes.List;
+pub const Scenes = CONFIG.Scenes;
+pub const Name   = std.meta.DeclEnum(Scenes);
+
+pub const State  = @import("../state.zig").Entity;
 
 pub const Code = enum {
-    Continue
+    Continue,
+    Block
 };
 
-pub fn enter(scene_name: Name, number: u8) !void {
-    try switch (scene_name) {
-        inline else => |tag| @field(List, @tagName(tag)).enter(number),
+pub fn enter(scene_name: Name, state: *State) !Code {
+    return switch (scene_name) {
+        inline else => |tag| @field(Scenes, @tagName(tag)).enter(state),
+    };
+}
+
+pub fn leave(scene_name: Name, state: *State) !Code {
+    return switch (scene_name) {
+        inline else => |tag| @field(Scenes, @tagName(tag)).leave(state),
+    };
+}
+
+pub fn update(scene_name: Name, state: *State) !Code {
+    return switch (scene_name) {
+        inline else => |tag| @field(Scenes, @tagName(tag)).update(state),
+    };
+}
+
+pub fn render(scene_name: Name, state: *State) !Code {
+    return switch (scene_name) {
+        inline else => |tag| @field(Scenes, @tagName(tag)).render(state),
     };
 }
