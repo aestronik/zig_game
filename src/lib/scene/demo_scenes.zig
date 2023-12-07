@@ -11,11 +11,18 @@ const raylib  = @cImport({@cInclude("raylib.h");});
 
 const Physics = @import("../physics.zig");
 
+const Players = @import("../players.zig");
+
 const Palette = @import("../palette.zig");
 
 pub const Default = struct {
     pub fn enter (state: *State) !Code {
         _ = try List.allocate(&state.Physics_Container);
+        _ = try Players.create(state);
+        var test_player = try Players.create(state);
+        state.Physics_Container.Data[
+            state.Player_Container.Data[test_player].data.Physics
+        ].data.Position.x = 100;
         
         return Code.Continue;
     }
@@ -24,25 +31,7 @@ pub const Default = struct {
         return Code.Continue;
     }
     pub fn update (state: *State) !Code {
-        if (raylib.IsKeyDown(65)) { 
-            state.Physics_Container.Data[0].data.Velocity.x = -0.1;
-        }
-        else if (raylib.IsKeyDown(68)) { 
-            state.Physics_Container.Data[0].data.Velocity.x = 0.1;
-        }
-        else {
-            state.Physics_Container.Data[0].data.Velocity.x = 0.0;
-        }
-        
-        if (raylib.IsKeyDown(87)) { 
-            state.Physics_Container.Data[0].data.Velocity.y = -0.1;
-        }
-        else if (raylib.IsKeyDown(83)) { 
-            state.Physics_Container.Data[0].data.Velocity.y = 0.1;
-        }
-        else {
-            state.Physics_Container.Data[0].data.Velocity.y = 0.0;
-        }
+        Players.update(state);
         Physics.update(state);
         return Code.Continue;
     }

@@ -4,6 +4,7 @@ const raylib  = @cImport({@cInclude("raylib.h");});
 const List    = @import("lib/list.zig");
 const Physics = @import("lib/physics.zig");
 const State   = @import("lib/state.zig");
+const Player  = @import("lib/players.zig");
 const CONFIG  = @import("config.zig");
 const Scene   = @import("lib/scene/main.zig");
 const Palette = @import("lib/palette.zig");
@@ -19,6 +20,7 @@ pub fn main() !void {
     var game_state = State.Entity {
         .Physics_Container = List.initialize([CONFIG.PHYSICS_MAX]List.Entity(Physics.Entity)),
         .Scene_Container   = List.initialize([CONFIG.SCENES_MAX]List.Entity(Scene.Name)),
+        .Player_Container  = List.initialize([CONFIG.PLAYER_MAX]List.Entity(Player.Entity)),
         .RNG               = std.rand.DefaultPrng.init(42),
         .texture           = raylib.LoadTexture("assets/visual/missing_texture_32_hollow.png")
     };
