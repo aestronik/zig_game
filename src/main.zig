@@ -29,6 +29,7 @@ pub fn main() !void {
         _ = try Scene.update(Scene.Name.Default, &game_state);
         _ = try Scene.render(Scene.Name.Default, &game_state);
     }
+    _ = try Scene.leave(Scene.Name.Default, &game_state);
 }
 
 
