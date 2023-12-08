@@ -2,6 +2,10 @@ const List    = @import("list.zig");
 const State   = @import("state.zig");
 const raylib  = @cImport({@cInclude("raylib.h");});
 
+const Sprite_Sheet = @import("display/sprite_sheet.zig");
+const Sprite       = @import("display/sprite.zig");
+
+const CONFIG = @import("../config.zig");
 
 const std     = @import("std");
 const print   = std.debug.print;
@@ -16,6 +20,7 @@ pub const Entity = struct {
         Left:           u8,
         Right:          u8
     },
+    Sprite:         usize,
     Target:         raylib.Vector2
 };
 /// Setting up the state properly
@@ -40,6 +45,16 @@ pub fn create (state: *State.Entity) !usize {
     // Target
     player.Target.x = 0;
     player.Target.y = 0;
+    // Visuals
+    player.Sprite = try Sprite.create(state);
+    state.Sprite_Container.Data[
+        player.Sprite
+    ].data.Sheet = try Sprite_Sheet.create(
+        state,
+        raylib.LoadTexture("assets/visual/player.png"),
+        raylib.Vector2 {.x = 32, .y = 32},
+        [CONFIG.ANIMATION_SIZE]f32{ 1, 4, 0, 2, 0, 0, 0, 0 }
+    );
 
     return player_index;
 }
@@ -52,16 +67,26 @@ pub fn update (state: *State.Entity) void {
 
         if (!state.Player_Container.Data[index].in_use) { continue; }
 
-        var entity = &state.Player_Container.Data[index].data;
-        var entity_physics = &state.Physics_Container.Data[entity.Physics].data;
+        var player = &state.Player_Container.Data[index].data;
+        var player_physics = &state.Physics_Container.Data[player.Physics].data;
         // Controls
-        entity_physics.*.Velocity.x = 0;
-        entity_physics.*.Velocity.y = 0;
+        player_physics.*.Velocity.x = 0;
+        player_physics.*.Velocity.y = 0;
 
-        if (raylib.IsKeyDown(entity.Controls.Up))    { entity_physics.*.Velocity.y -= 1.0; }
-        if (raylib.IsKeyDown(entity.Controls.Down))  { entity_physics.*.Velocity.y += 1.0; }
-        if (raylib.IsKeyDown(entity.Controls.Left))  { entity_physics.*.Velocity.x -= 1.0; }
-        if (raylib.IsKeyDown(entity.Controls.Right)) { entity_physics.*.Velocity.x += 1.0; }
+        var moving = false;
 
+        if (raylib.IsKeyDown(player.Controls.Up))    { player_physics.*.Position.y -= 1.0; moving = true; }
+        if (raylib.IsKeyDown(player.Controls.Down))  { player_physics.*.Position.y += 1.0; moving = true; }
+        if (raylib.IsKeyDown(player.Controls.Left))  { player_physics.*.Position.x -= 1.0; moving = true; }
+        if (raylib.IsKeyDown(player.Controls.Right)) { player_physics.*.Position.x += 1.0; moving = true; }
+
+        const sprite = &state.Sprite_Container.Data[player.Sprite].data;
+        sprite.*.Position.x = player_physics.Position.x;
+        sprite.*.Position.y = player_physics.Position.y;
+
+        if (moving) { sprite.*.animation = 1; }
+        else if (raylib.IsKeyDown(81)) { sprite.*.animation = 2; }
+        else if (raylib.IsKeyDown(69)) { sprite.*.animation = 3; }
+        else { sprite.*.animation = 0; }
     }
 }

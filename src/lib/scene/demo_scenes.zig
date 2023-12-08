@@ -5,6 +5,8 @@ const Scene   = @import("main.zig");
 const State   = Scene.State;
 const Code    = Scene.Code;
 
+const Sprites = @import("../display/sprite.zig");
+
 const List    = @import("../list.zig");
 
 const raylib  = @cImport({@cInclude("raylib.h");});
@@ -13,7 +15,7 @@ const Physics = @import("../physics.zig");
 
 const Players = @import("../players.zig");
 
-const Palette = @import("../palette.zig");
+const Palette = @import("../display/palette.zig");
 
 pub const Default = struct {
     pub fn enter (state: *State) !Code {
@@ -33,6 +35,7 @@ pub const Default = struct {
     pub fn update (state: *State) !Code {
         Players.update(state);
         Physics.update(state);
+        Sprites.update(state);
         return Code.Continue;
     }
     pub fn render (state: *State) !Code {
@@ -42,6 +45,7 @@ pub const Default = struct {
         // Wipe the screen
         raylib.ClearBackground(Palette.white);
         // Draw the random squares
+        Sprites.render(state);
         var index: usize = 0;
         while ( index < state.Physics_Container.final_index ) {
             const entity = state.Physics_Container.Data[index];
