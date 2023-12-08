@@ -58,10 +58,10 @@ pub fn update (state: *State.Entity) void {
         entity_physics.*.Velocity.x = 0;
         entity_physics.*.Velocity.y = 0;
 
-        if (raylib.IsKeyDown(entity.Controls.Up))    { entity_physics.*.Velocity.y -= 0.1; }
-        if (raylib.IsKeyDown(entity.Controls.Down))  { entity_physics.*.Velocity.y += 0.1; }
-        if (raylib.IsKeyDown(entity.Controls.Left))  { entity_physics.*.Velocity.x -= 0.1; }
-        if (raylib.IsKeyDown(entity.Controls.Right)) { entity_physics.*.Velocity.x += 0.1; }
+        if (raylib.IsKeyDown(entity.Controls.Up))    { entity_physics.*.Velocity.y -= 1.0; }
+        if (raylib.IsKeyDown(entity.Controls.Down))  { entity_physics.*.Velocity.y += 1.0; }
+        if (raylib.IsKeyDown(entity.Controls.Left))  { entity_physics.*.Velocity.x -= 1.0; }
+        if (raylib.IsKeyDown(entity.Controls.Right)) { entity_physics.*.Velocity.x += 1.0; }
 
     }
 }

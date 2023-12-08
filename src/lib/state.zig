@@ -10,9 +10,10 @@ const std     = @import("std");
 const raylib  = @cImport({@cInclude("raylib.h");});
 
 pub const Entity = struct {
-    Physics_Container: List.Container([CONFIG.PHYSICS_MAX]List.Entity(Physics.Entity)),
-    Scene_Container:   List.Container([CONFIG.SCENES_MAX]List.Entity(Scene.Name)),
-    Player_Container:  List.Container([CONFIG.PLAYER_MAX]List.Entity(Player.Entity)),
-    RNG:               std.rand.Xoshiro256,
-    texture:           raylib.Texture
+    Physics_Container:  List.Container([CONFIG.PHYSICS_MAX]List.Entity(Physics.Entity)),
+    Scene_Container:    List.Container([CONFIG.SCENES_MAX]List.Entity(Scene.Name)),
+    Player_Container:   List.Container([CONFIG.PLAYER_MAX]List.Entity(Player.Entity)),
+    RNG:                std.rand.Xoshiro256,
+    texture:            raylib.Texture,
+    last_frame_in_ns:   i64
 };
