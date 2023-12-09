@@ -2,7 +2,11 @@ const List    = @import("../list.zig");
 const State   = @import("../state.zig");
 const raylib  = @cImport({@cInclude("raylib.h");});
 
+const Sprite_Sheet = @import("sprite_sheet.zig");
+
 const Palette = @import("palette.zig");
+
+const Camera  = @import("camera.zig");
 
 const CONFIG  = @import("../../config.zig");
 
@@ -15,7 +19,8 @@ pub const Entity = struct {
     animation:  u8,
     frame:      f32,
     timer:      u8,
-    drawn:      bool
+    drawn:      bool,
+    flipped:    bool
 };
 
 pub fn create (state: *State.Entity) !usize {
@@ -30,6 +35,7 @@ pub fn create (state: *State.Entity) !usize {
     sprite.*.frame      = 0;
     sprite.*.timer      = 0;
     sprite.*.drawn      = true;
+    sprite.*.flipped    = true;
 
     return index;
 }
@@ -40,18 +46,20 @@ pub fn update (state: *State.Entity) void {
     while (index < state.Sprite_Container.final_index) {
         defer { index += 1; }
         if (!state.Sprite_Container.Data[index].in_use) { continue; }
-        var entity = &state.Sprite_Container.Data[index].data;
-        const sprite_sheet = state.Sprite_Sheet_Container.Data[entity.Sheet].data;
+        var sprite = &state.Sprite_Container.Data[index].data;
+        const sprite_sheet = state.Sprite_Sheet_Container.Data[sprite.Sheet].data;
 
-        entity.*.timer += 1;
+        // sprite.rotation += 1;
+
+        sprite.*.timer += 1;
         // Find out if it's time to go to the next frame
-        if (entity.timer >= CONFIG.ANIMATION_TIMER) {
-            entity.*.timer = 0;
-            entity.*.frame += 1;
+        if (sprite.timer >= CONFIG.ANIMATION_TIMER) {
+            sprite.*.timer = 0;
+            sprite.*.frame += 1;
         }
         // Wrap frames
-        if (entity.frame >= sprite_sheet.Animations[entity.animation]) {
-            entity.*.frame = 0;
+        if (sprite.frame >= sprite_sheet.Animations[sprite.animation]) {
+            sprite.*.frame = 0;
         }
     }
 }
@@ -66,30 +74,44 @@ pub fn render (state: *State.Entity) void {
         if (!sprite.drawn) { continue; }
         const sprite_sheet = state.Sprite_Sheet_Container.Data[sprite.Sheet].data;
 
-        const anim_source_offset = sprite_sheet.Offset[sprite.animation];
-
-        raylib.DrawTexturePro(
-            sprite_sheet.Texture,
-            raylib.Rectangle {
-                .x =      anim_source_offset + sprite.frame * sprite_sheet.Dimensions.x,
-                .y =      0,
-                .width =  sprite_sheet.Dimensions.x,
-                .height = sprite_sheet.Dimensions.y
-            },
-            raylib.Rectangle {
-                .x =      sprite.Position.x,
-                .y =      sprite.Position.y,
-                .width =  sprite_sheet.Dimensions.x,
-                .height = sprite_sheet.Dimensions.y
-            },
-            raylib.Vector2 {
-                .x = 0,
-                .y = 0,
-            },
-            sprite.rotation,
-            Palette.white
-        );        
+        draw(state.Camera, sprite, sprite_sheet);
     }
+}
+
+pub fn draw (camera: Camera.Entity, sprite: Entity, sprite_sheet: Sprite_Sheet.Entity) void {
+    const anim_source_offset = sprite_sheet.Offset[sprite.animation];
+    // const camera = state.Display.Camera.Position;
+    var flip_source: f32 = 1;
+    if (sprite.flipped) { flip_source = -1; }
+
+    raylib.DrawTexturePro(
+        sprite_sheet.Texture,
+        raylib.Rectangle {
+            .x      = anim_source_offset + sprite.frame * sprite_sheet.Dimensions.x,
+            .y      = 0,
+            .width  = sprite_sheet.Dimensions.x * flip_source,
+            .height = sprite_sheet.Dimensions.y
+        },
+        raylib.Rectangle {
+            .x      = 
+                (
+                    sprite.Position.x                               // Where the thing is
+                    - sprite_sheet.Dimensions.x / 2                 // Center objects by their dimensions
+                    - camera.Position.x                             // Offset objects by camera position
+                    + CONFIG.DISPLAY_WIDTH / 2                      // Center the objects on the camera
+                    * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom    // offset the centering based on the zoom vs window 
+                ) * camera.zoom, 
+            .y      = (sprite.Position.y - sprite_sheet.Dimensions.y / 2 - camera.Position.y + CONFIG.DISPLAY_HEIGHT / 2 * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom ) * camera.zoom, 
+            .width  = sprite_sheet.Dimensions.x * camera.zoom, 
+            .height = sprite_sheet.Dimensions.y * camera.zoom, 
+        },
+        raylib.Vector2 {
+            .x      = 0,
+            .y      = 0,
+        },
+        sprite.rotation,
+        Palette.white
+    );
 }
 
 

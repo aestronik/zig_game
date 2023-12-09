@@ -15,6 +15,8 @@ const Physics = @import("../physics.zig");
 
 const Players = @import("../players.zig");
 
+const Camera = @import("../display/camera.zig");
+
 const Palette = @import("../display/palette.zig");
 
 pub const Default = struct {
@@ -36,6 +38,7 @@ pub const Default = struct {
         Players.update(state);
         Physics.update(state);
         Sprites.update(state);
+        Camera.update(state);
         return Code.Continue;
     }
     pub fn render (state: *State) !Code {
@@ -46,18 +49,6 @@ pub const Default = struct {
         raylib.ClearBackground(Palette.white);
         // Draw the random squares
         Sprites.render(state);
-        var index: usize = 0;
-        while ( index < state.Physics_Container.final_index ) {
-            const entity = state.Physics_Container.Data[index];
-            defer { index += 1; }
-            if (!entity.in_use) { continue; }
-            raylib.DrawTexture(
-                state.texture,
-                @intFromFloat(state.Physics_Container.Data[index].data.Position.x),
-                @intFromFloat(state.Physics_Container.Data[index].data.Position.y),
-                Palette.white
-            );
-        }
         // Finally draw the FPS
         raylib.DrawFPS(100, 100);
         // Success!
