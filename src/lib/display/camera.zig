@@ -43,3 +43,19 @@ pub fn offset_y ( camera: Entity, target: f32 ) f32 {
         * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom    // offset the centering based on the zoom vs window 
     ) * camera.zoom;
 }
+
+pub fn interpret_x (camera: Entity, target: f32) f32 {
+    return (
+        (target / camera.zoom)                                      // Reverse the scaling by zoom
+        - (CONFIG.DISPLAY_WIDTH / 2 * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom) // Subtract the centered offset
+        + camera.Position.x                                         // Add the camera's position
+    );
+}
+
+pub fn interpret_y (camera: Entity, target: f32) f32 {
+    return (
+        (target / camera.zoom)                                      // Reverse the scaling by zoom
+        - (CONFIG.DISPLAY_HEIGHT / 2 * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom) // Subtract the centered offset
+        + camera.Position.y                                         // Add the camera's position
+    );
+}

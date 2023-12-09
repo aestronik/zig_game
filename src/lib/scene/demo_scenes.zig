@@ -49,8 +49,26 @@ pub const Default = struct {
         raylib.ClearBackground(Palette.white);
         // Draw the random squares
         Sprites.render(state);
+        const camera = state.Camera;
+        const mouse  = raylib.GetMousePosition();
         // Finally draw the FPS
         raylib.DrawFPS(100, 100);
+
+        const position = state.Physics_Container.Data[
+                state.Player_Container.Data[0].data.Physics
+            ].data.Position;
+
+        raylib.DrawLineV(
+            raylib.Vector2 {
+                .x = Camera.offset_x( camera, Camera.interpret_x(camera, mouse.x) ),
+                .y = Camera.offset_y( camera, Camera.interpret_y(camera, mouse.y) )
+            },
+            raylib.Vector2 {
+                .x = Camera.offset_x( camera, position.x ),
+                .y = Camera.offset_y( camera, position.y )
+            },
+            Palette.blue
+        );
         // Success!
         return Code.Continue;
     }

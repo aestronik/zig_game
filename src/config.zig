@@ -9,7 +9,7 @@ pub const SPRITE_MAX        = PHYSICS_MAX;  // Makes sense right?
 
 pub const DISPLAY_WIDTH         = 0x0280; // 640
 pub const DISPLAY_HEIGHT        = 0x01B0; // 432
-pub const DISPLAY_MAGNIFICATION = 0x0001;
+pub const DISPLAY_MAGNIFICATION = 0x0002;
 
 pub const GAME_NAME = "Zig Game";
 
