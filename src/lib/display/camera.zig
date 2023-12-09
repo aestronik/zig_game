@@ -4,8 +4,17 @@ const CONFIG  = @import("../../config.zig");
 
 pub const Entity = struct {
     Position:   raylib.Vector2,
+    Target:     raylib.Vector2,
     zoom:       f32,
 };
+
+pub fn initialize () Entity {
+    return Entity { 
+            .Position   = raylib.Vector2 { .x = 0, .y = 0 }, 
+            .Target     = raylib.Vector2 { .x = 0, .y = 0 }, 
+            .zoom       = CONFIG.DISPLAY_MAGNIFICATION 
+    };
+}
 
 pub fn update (state: *State.Entity) void {
     const camera = &state.Camera;

@@ -19,6 +19,5 @@ pub const Entity = struct {
     Sprite_Sheet_Container: List.Container([CONFIG.SPRITE_SHEET_MAX]List.Entity(Sprite_Sheet.Entity)),
     RNG:                    std.rand.Xoshiro256,
     Camera:                 Camera.Entity,
-    texture:                raylib.Texture,
     last_frame_in_ns:       i64
 };

@@ -34,9 +34,8 @@ pub fn main() !void {
         .Player_Container       = List.initialize([CONFIG.PLAYER_MAX]List.Entity(Player.Entity)),
         .Sprite_Container       = List.initialize([CONFIG.SPRITE_MAX]List.Entity(Sprite.Entity)),
         .Sprite_Sheet_Container = List.initialize([CONFIG.SPRITE_SHEET_MAX]List.Entity(Sprite_Sheet.Entity)),
-        .Camera                 = Camera.Entity { .Position = raylib.Vector2 { .x = 0, .y = 0 }, .zoom = CONFIG.DISPLAY_MAGNIFICATION },
+        .Camera                 = Camera.initialize(),
         .RNG                    = std.rand.DefaultPrng.init(42),
-        .texture                = raylib.LoadTexture("assets/visual/missing_texture_32_hollow.png"),
         .last_frame_in_ns       = std.time.microTimestamp()
     };
     // Initialize everything
