@@ -17,3 +17,20 @@ pub fn update (state: *State.Entity) void {
 
     if (camera.zoom < CONFIG.CAMERA_MIN_ZOOM) {camera.*.zoom = CONFIG.CAMERA_MIN_ZOOM; }
 }
+
+pub fn offset_x ( camera: Entity, target: f32 ) f32 {
+    return (
+        target
+        - camera.Position.x                             // Offset objects by camera position
+        + CONFIG.DISPLAY_WIDTH / 2                      // Center the objects on the camera
+        * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom    // offset the centering based on the zoom vs window 
+    ) * camera.zoom;
+}
+pub fn offset_y ( camera: Entity, target: f32 ) f32 {
+    return (
+        target
+        - camera.Position.y                             // Offset objects by camera position
+        + CONFIG.DISPLAY_HEIGHT / 2                      // Center the objects on the camera
+        * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom    // offset the centering based on the zoom vs window 
+    ) * camera.zoom;
+}

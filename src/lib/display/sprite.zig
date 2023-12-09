@@ -93,15 +93,8 @@ pub fn draw (camera: Camera.Entity, sprite: Entity, sprite_sheet: Sprite_Sheet.E
             .height = sprite_sheet.Dimensions.y
         },
         raylib.Rectangle {
-            .x      = 
-                (
-                    sprite.Position.x                               // Where the thing is
-                    - sprite_sheet.Dimensions.x / 2                 // Center objects by their dimensions
-                    - camera.Position.x                             // Offset objects by camera position
-                    + CONFIG.DISPLAY_WIDTH / 2                      // Center the objects on the camera
-                    * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom    // offset the centering based on the zoom vs window 
-                ) * camera.zoom, 
-            .y      = (sprite.Position.y - sprite_sheet.Dimensions.y / 2 - camera.Position.y + CONFIG.DISPLAY_HEIGHT / 2 * CONFIG.DISPLAY_MAGNIFICATION / camera.zoom ) * camera.zoom, 
+            .x      = Camera.offset_x( camera, sprite.Position.x - sprite_sheet.Dimensions.x / 2),
+            .y      = Camera.offset_y( camera, sprite.Position.y - sprite_sheet.Dimensions.y / 2),
             .width  = sprite_sheet.Dimensions.x * camera.zoom, 
             .height = sprite_sheet.Dimensions.y * camera.zoom, 
         },
