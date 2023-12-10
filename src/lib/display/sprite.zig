@@ -35,7 +35,7 @@ pub fn create (state: *State.Entity) !usize {
     sprite.*.frame      = 0;
     sprite.*.timer      = 0;
     sprite.*.drawn      = true;
-    sprite.*.flipped    = true;
+    sprite.*.flipped    = false;
 
     return index;
 }
