@@ -12,6 +12,16 @@ pub fn initialize (state: *State.Entity) void {
     _ = state;
     return;
 }
+pub fn create (state: *State.Entity) !usize {
+    const index = try List.allocate(&state.Physics_Container);
+    // TODO: Initialize these to zero
+    return index;
+}
+pub fn delete (state: *State.Entity, index: usize) !void {
+    // Here's the thing, we might actually have multiple things
+    // linked to the same address so this will occasionally error
+    _ = try List.deallocate(&state.Physics_Container, index);
+}
 /// Setting up the logic, just Newtonian Physics!
 pub fn update (state: *State.Entity) void {
     var index: usize = 0;

@@ -9,6 +9,7 @@ const CONFIG  = @import("config.zig");
 const Scene   = @import("lib/scene/main.zig");
 const Palette = @import("lib/display/palette.zig");
 
+const Projectile    = @import("lib/projectile.zig");
 const Camera        = @import("lib/display/camera.zig");
 const Sprite        = @import("lib/display/sprite.zig");
 const Sprite_Sheet  = @import("lib/display/sprite_sheet.zig");
@@ -34,6 +35,7 @@ pub fn main() !void {
         .Player_Container       = List.initialize([CONFIG.PLAYER_MAX]List.Entity(Player.Entity)),
         .Sprite_Container       = List.initialize([CONFIG.SPRITE_MAX]List.Entity(Sprite.Entity)),
         .Sprite_Sheet_Container = List.initialize([CONFIG.SPRITE_SHEET_MAX]List.Entity(Sprite_Sheet.Entity)),
+        .Projectile_Container   = List.initialize([CONFIG.PROJECTILE_MAX]List.Entity(Projectile.Entity)),
         .Camera                 = Camera.initialize(),
         .RNG                    = std.rand.DefaultPrng.init(42),
         .last_frame_in_ns       = std.time.microTimestamp()

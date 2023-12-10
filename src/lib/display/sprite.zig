@@ -39,6 +39,9 @@ pub fn create (state: *State.Entity) !usize {
 
     return index;
 }
+pub fn delete (state: *State.Entity, index: usize) !void {
+    _ = try List.deallocate(&state.Sprite_Container, index);
+}
 
 pub fn update (state: *State.Entity) void {
     var index: usize = 0;

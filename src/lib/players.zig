@@ -5,6 +5,8 @@ const raylib  = @cImport({@cInclude("raylib.h");});
 const Sprite_Sheet = @import("display/sprite_sheet.zig");
 const Sprite       = @import("display/sprite.zig");
 
+const Physics      = @import("physics.zig");
+
 const CONFIG = @import("../config.zig");
 
 const std     = @import("std");
@@ -20,6 +22,8 @@ pub const Entity = struct {
         Left:           u8,
         Right:          u8
     },
+    size:           f32,
+    health:         i32,
     Sprite:         usize,
     Target:         raylib.Vector2
 };
@@ -31,7 +35,7 @@ pub fn initialize (state: *State.Entity) void {
 /// Create a player and return its index!
 pub fn create (state: *State.Entity) !usize {
     const player_index   = try List.allocate(&state.Player_Container);
-    const player_physics = try List.allocate(&state.Physics_Container);
+    const player_physics = try Physics.create(state);
 
     var Players = &state.Player_Container.Data;
     // Physics
@@ -45,18 +49,28 @@ pub fn create (state: *State.Entity) !usize {
     // Target
     player.Target.x = 0;
     player.Target.y = 0;
+    // Dodging
+    player.size     = 32;
+    player.health   = 20;
     // Visuals
     player.Sprite = try Sprite.create(state);
     state.Sprite_Container.Data[
         player.Sprite
     ].data.Sheet = try Sprite_Sheet.create(
         state,
-        raylib.LoadTexture("assets/visual/player.png"),
+        raylib.LoadTexture("assets/visual/missing_texture_32.png"),
         raylib.Vector2 {.x = 32, .y = 32},
         [CONFIG.ANIMATION_SIZE]f32{ 1, 4, 0, 2, 0, 0, 0, 0 }
     );
 
     return player_index;
+}
+pub fn delete (state: *State.Entity, index: usize) !void  {
+    const player = state.Player_Container.Data[index].data;
+    // Deallocate the sprite and the physics
+    _ = try Sprite.delete(state, player.Sprite);
+    _ = try Physics.delete(state, player.Physics);
+    _ = try List.deallocate(&state.Player_Container, index);
 }
 /// Setting up the logic, just Newtonian Physics!
 pub fn update (state: *State.Entity) void {

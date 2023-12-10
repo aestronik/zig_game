@@ -6,6 +6,9 @@ const CONFIG        = @import("../config.zig");
 const Sprite        = @import("display/sprite.zig");
 const Sprite_Sheet  = @import("display/sprite_sheet.zig");
 const Camera        = @import("display/camera.zig");
+const Projectile    = @import("projectile.zig");
+
+// TODO: Maybe it's smarter to import all these things from Main?
 
 const std     = @import("std");
 
@@ -17,6 +20,7 @@ pub const Entity = struct {
     Player_Container:       List.Container([CONFIG.PLAYER_MAX]List.Entity(Player.Entity)),
     Sprite_Container:       List.Container([CONFIG.SPRITE_MAX]List.Entity(Sprite.Entity)),
     Sprite_Sheet_Container: List.Container([CONFIG.SPRITE_SHEET_MAX]List.Entity(Sprite_Sheet.Entity)),
+    Projectile_Container:   List.Container([CONFIG.PROJECTILE_MAX]List.Entity(Projectile.Entity)),
     RNG:                    std.rand.Xoshiro256,
     Camera:                 Camera.Entity,
     last_frame_in_ns:       i64

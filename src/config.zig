@@ -5,12 +5,15 @@ pub const Scenes                = @import("lib/scene/demo_scenes.zig");
 pub const PHYSICS_MAX           = 0x4000;       // 16,384
 pub const SCENES_MAX            = 0x0010;       // 00,016
 pub const PLAYER_MAX            = 0x0020;       // 00,032
-pub const SPRITE_SHEET_MAX      = 0x0010;       // 00,016
+pub const SPRITE_SHEET_MAX      = 0x0100;       // 00,016
 pub const SPRITE_MAX            = PHYSICS_MAX;  // Makes sense right?
+pub const PROJECTILE_MAX        = 0x3000;       // 12,288
+pub const ENEMY_MAX             = 0x0500;       // 01,280
+pub const ALLY_MAX              = 0x0100;       // 00,256
 
-pub const DISPLAY_WIDTH         = 0x0280; // 640
-pub const DISPLAY_HEIGHT        = 0x01B0; // 432
-pub const DISPLAY_MAGNIFICATION = 0x0002; // 2x
+pub const DISPLAY_WIDTH         = 0x0280;       // 640
+pub const DISPLAY_HEIGHT        = 0x01B0;       // 432
+pub const DISPLAY_MAGNIFICATION = 0x0002;       //  x2
 
 pub const GAME_NAME             = "Zig Game";
 
